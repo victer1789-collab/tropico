@@ -1,0 +1,19 @@
+{
+  "short_name": "Mi Trópico",
+  "name": "Academia Virtual Mi Trópico",
+  "description": "Plataforma de clases virtuales con Google Meet, calendario escolar de 1ero a 6to, control de asistencia en tiempo real y reportes de desempeño.",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#090d16",
+  "theme_color": "#2563eb",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/"
+}

@@ -1,0 +1,150 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role-based access control and institutional metadata",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "photoURL": { "type": "string", "maxLength": 512 },
+        "role": { "type": "string", "enum": ["admin", "docente", "estudiante"] },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "assignedSubjects": { "type": "string", "maxLength": 256 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "displayName", "role"]
+    },
+    "Class": {
+      "title": "Class",
+      "description": "Virtual class session with Google Meet and Calendar synchronization",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "subject": { "type": "string", "maxLength": 100 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "teacherName": { "type": "string", "maxLength": 128 },
+        "teacherEmail": { "type": "string", "maxLength": 256 },
+        "meetUrl": { "type": "string", "maxLength": 512 },
+        "meetSpaceName": { "type": "string", "maxLength": 256 },
+        "calendarEventId": { "type": "string", "maxLength": 256 },
+        "scheduledAt": { "type": "string", "format": "date-time" },
+        "durationMinutes": { "type": "integer" },
+        "status": { "type": "string", "enum": ["scheduled", "live", "completed", "cancelled"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "subject", "teacherId", "teacherEmail", "scheduledAt", "durationMinutes", "status"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Real-time class attendance record for student or participant",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "classId": { "type": "string", "maxLength": 128 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "studentName": { "type": "string", "maxLength": 128 },
+        "studentEmail": { "type": "string", "maxLength": 256 },
+        "joinedAt": { "type": "string", "format": "date-time" },
+        "leftAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["present", "late", "absent", "excused"] },
+        "deviceType": { "type": "string", "maxLength": 64 },
+        "notes": { "type": "string", "maxLength": 500 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "classId", "studentId", "studentEmail", "status"]
+    },
+    "Report": {
+      "title": "Report",
+      "description": "Monthly academic performance and attendance evaluation report",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "monthYear": { "type": "string", "maxLength": 16 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "studentName": { "type": "string", "maxLength": 128 },
+        "studentEmail": { "type": "string", "maxLength": 256 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "subject": { "type": "string", "maxLength": 100 },
+        "attendanceRate": { "type": "number" },
+        "classesTotal": { "type": "integer" },
+        "classesAttended": { "type": "integer" },
+        "grade": { "type": "number" },
+        "feedback": { "type": "string", "maxLength": 1000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "monthYear", "studentId", "studentEmail", "subject", "attendanceRate", "grade"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Administrative authority record",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "maxLength": 256 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "Institutional broadcast announcement from academy administration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "content": { "type": "string", "maxLength": 3000 },
+        "priority": { "type": "string", "enum": ["normal", "urgente", "informativo"] },
+        "targetAudience": { "type": "string", "maxLength": 64 },
+        "authorName": { "type": "string", "maxLength": 128 },
+        "authorEmail": { "type": "string", "maxLength": 256 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "content", "priority", "targetAudience", "authorEmail"]
+    },
+    "System": {
+      "title": "System",
+      "description": "Internal institutional initialization sentinel",
+      "type": "object",
+      "properties": {
+        "version": { "type": "string" },
+        "initializedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles indexed by Firebase Auth UID"
+    },
+    "/classes/{classId}": {
+      "schema": { "$ref": "#/entities/Class" },
+      "description": "Virtual classroom sessions and scheduled meets"
+    },
+    "/attendance/{attendanceId}": {
+      "schema": { "$ref": "#/entities/Attendance" },
+      "description": "Real-time attendance records per class session and student"
+    },
+    "/reports/{reportId}": {
+      "schema": { "$ref": "#/entities/Report" },
+      "description": "Monthly academic evaluations and performance metrics"
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/Admin" },
+      "description": "Admin identity whitelist for privilege validation"
+    },
+    "/announcements/{announcementId}": {
+      "schema": { "$ref": "#/entities/Announcement" },
+      "description": "Institutional announcements and broadcast messages"
+    },
+    "/system/{systemId}": {
+      "schema": { "$ref": "#/entities/System" },
+      "description": "System state metadata and seed configuration"
+    }
+  }
+}

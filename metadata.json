@@ -1,0 +1,6 @@
+{
+  "name": "MeetEdu - Clases Virtuales & Gestión Académica",
+  "description": "Plataforma de clases virtuales con Google Meet, calendario integrado, control de asistencia en tiempo real, reportes de desempeño y gestión por roles.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
