@@ -1,12 +1,12 @@
 {
-  "projectId": "gen-lang-client-0282290695",
-  "appId": "1:889597750603:web:169560467fd3c44226ccce",
-  "apiKey": "AIzaSyAJRf0OyvFxI2WNf4J-Uk-MuV40-02zDbg",
-  "authDomain": "gen-lang-client-0282290695.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-meeteduclasesvir-c0873897-c0ef-4c94-ac53-9e908fa94004",
-  "storageBucket": "gen-lang-client-0282290695.firebasestorage.app",
-  "messagingSenderId": "889597750603",
+  "projectId": "tropicov1",
+  "appId": "1:254792023095:web:0597017879b42154f613b2",
+  "apiKey": "AIzaSyAabnUrLoFp5NqN4w1gjy-tVyfoO3IKiQ4",
+  "authDomain": "tropicov1.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "tropicov1.firebasestorage.app",
+  "messagingSenderId": "254792023095",
   "measurementId": "",
-  "oAuthClientId": "889597750603-ccq8eb4vkdd4debd374061emgqlocic4.apps.googleusercontent.com",
+  "oAuthClientId": "",
   "recaptchaSiteKey": ""
 }

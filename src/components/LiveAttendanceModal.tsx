@@ -19,6 +19,7 @@ import {
   updateAttendanceStatus,
   exportAttendanceCSV,
 } from '../services/attendanceService';
+import { db } from '../firebase';
 
 interface LiveAttendanceModalProps {
   isOpen: boolean;

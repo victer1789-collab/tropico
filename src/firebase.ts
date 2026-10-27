@@ -1,19 +1,25 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
-import firebaseConfig from '../firebase-applet-config.json';
+import { getAuth } from 'firebase/auth';
 
-// Initialize Firebase app singleton
-export const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+export const firebaseConfig = {
+  apiKey: "AIzaSyAabnUrLoFp5NqN4w1gjy-tVyfoO3IKiQ4",
+  authDomain: "tropicov1.firebaseapp.com",
+  projectId: "tropicov1",
+  storageBucket: "tropicov1.firebasestorage.app",
+  messagingSenderId: "254792023095",
+  appId: "1:254792023095:web:0597017879b42154f613b2"
+};
 
-// CRITICAL: The app will break without specifying firestoreDatabaseId
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+export const db = getFirestore(app);
 export const auth = getAuth(app);
+export { app };
 
-// Test connection on boot as required by Firestore integration rules
+// Test connection on boot
 export async function testConnection() {
   try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
+    await getDocFromServer(doc(db, 'system', 'connection_test'));
   } catch (error) {
     if (error instanceof Error && error.message.includes('the client is offline')) {
       console.error('Please check your Firebase configuration.');

@@ -86,8 +86,8 @@ function MainApp() {
 
   // Seed sample data and listen to PWA prompt
   useEffect(() => {
-    if (user && !userProfile?.uid.startsWith('demo_')) {
-      checkAndSeedInitialData(user.email || undefined, user.uid);
+    if (user || userProfile) {
+      checkAndSeedInitialData(user?.email || userProfile?.email || undefined, user?.uid || userProfile?.uid);
     }
 
     const handleBeforeInstall = (e: Event) => {
@@ -98,7 +98,7 @@ function MainApp() {
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
   }, [user, userProfile]);
 
-  // Real-time Firestore subscriptions or Demo data loader
+  // Real-time Firestore subscriptions to tropicov1 database
   useEffect(() => {
     // 1. If unauthenticated, clear datasets and do not attach Firestore listeners
     if (!user && !userProfile) {
@@ -109,53 +109,58 @@ function MainApp() {
       return;
     }
 
-    // 2. If user is in Demo Mode (fictive user testing)
-    if (userProfile?.uid.startsWith('demo_')) {
-      setClasses(SAMPLE_CLASSES);
-      setAttendance(SAMPLE_ATTENDANCE);
-      setUsers([...INITIAL_STUDENTS, ...INITIAL_TEACHERS]);
-      setAnnouncements(SAMPLE_ANNOUNCEMENTS);
-      return;
-    }
-
-    // 3. Authenticated user with Firebase Auth
-    if (user) {
-      const unsubClasses = subscribeToClasses((data) => {
-        setClasses(data);
-      });
-
-      const unsubAttendance = subscribeToAllAttendance((data) => {
-        setAttendance(data);
-      });
-
-      let unsubUsers: (() => void) | undefined;
-      try {
-        unsubUsers = onSnapshot(
-          collection(db, 'users'),
-          (snap) => {
-            const list: UserProfile[] = [];
-            snap.forEach((d) => list.push(d.data() as UserProfile));
-            setUsers(list);
-          },
-          (err) => {
-            console.warn('Users listener notice:', err);
-          }
-        );
-      } catch (e) {
-        console.warn('Users listener attach error:', e);
+    // 2. Real-time Firestore subscriptions with cloud persistence
+    const unsubClasses = subscribeToClasses(
+      (data) => {
+        if (data && data.length > 0) {
+          setClasses(data);
+        } else {
+          checkAndSeedInitialData(user?.email || userProfile?.email || undefined, user?.uid || userProfile?.uid);
+          setClasses(SAMPLE_CLASSES);
+        }
+      },
+      () => {
+        setClasses((prev) => (prev.length > 0 ? prev : SAMPLE_CLASSES));
       }
+    );
 
-      const unsubAnnouncements = subscribeToAnnouncements((data) => {
-        setAnnouncements(data);
-      });
+    const unsubAttendance = subscribeToAllAttendance((data) => {
+      setAttendance((prev) => (data && data.length > 0 ? data : (prev.length > 0 ? prev : SAMPLE_ATTENDANCE)));
+    });
 
-      return () => {
-        if (unsubClasses) unsubClasses();
-        if (unsubAttendance) unsubAttendance();
-        if (unsubUsers) unsubUsers();
-        if (unsubAnnouncements) unsubAnnouncements();
-      };
+    let unsubUsers: (() => void) | undefined;
+    try {
+      unsubUsers = onSnapshot(
+        collection(db, 'users'),
+        (snap) => {
+          const list: UserProfile[] = [];
+          snap.forEach((d) => list.push(d.data() as UserProfile));
+          if (list.length > 0) {
+            setUsers(list);
+          } else {
+            setUsers([...INITIAL_STUDENTS, ...INITIAL_TEACHERS]);
+          }
+        },
+        (err) => {
+          console.warn('Users listener notice:', err);
+          setUsers((prev) => (prev.length > 0 ? prev : [...INITIAL_STUDENTS, ...INITIAL_TEACHERS]));
+        }
+      );
+    } catch (e) {
+      console.warn('Users listener attach error:', e);
+      setUsers([...INITIAL_STUDENTS, ...INITIAL_TEACHERS]);
     }
+
+    const unsubAnnouncements = subscribeToAnnouncements((data) => {
+      setAnnouncements((prev) => (data && data.length > 0 ? data : (prev.length > 0 ? prev : SAMPLE_ANNOUNCEMENTS)));
+    });
+
+    return () => {
+      if (unsubClasses) unsubClasses();
+      if (unsubAttendance) unsubAttendance();
+      if (unsubUsers) unsubUsers();
+      if (unsubAnnouncements) unsubAnnouncements();
+    };
   }, [user, userProfile?.uid]);
 
   // Automated notification checker for upcoming classes

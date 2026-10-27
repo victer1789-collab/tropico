@@ -20,6 +20,7 @@ import { VirtualClass, AttendanceRecord, UserProfile, GradeLevel, Announcement }
 import { createGoogleMeetSpace } from '../services/meetService';
 import { createClass, updateClassStatus } from '../services/classService';
 import { Megaphone } from 'lucide-react';
+import { db } from '../firebase';
 
 interface TeacherDashboardProps {
   userProfile: UserProfile;

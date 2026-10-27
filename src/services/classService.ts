@@ -19,9 +19,6 @@ export function subscribeToClasses(
   onClassesChange: (classes: VirtualClass[]) => void,
   onError?: (error: Error) => void
 ) {
-  if (!auth.currentUser) {
-    return () => {};
-  }
   try {
     const q = query(collection(db, CLASSES_COLLECTION), orderBy('scheduledAt', 'asc'));
     return onSnapshot(
@@ -34,7 +31,7 @@ export function subscribeToClasses(
         onClassesChange(classes);
       },
       (error) => {
-        handleFirestoreError(error, OperationType.GET, CLASSES_COLLECTION);
+        console.warn('Classes listener notice:', error);
         onError?.(error);
       }
     );
@@ -53,10 +50,6 @@ export async function createClass(classData: Omit<VirtualClass, 'id' | 'createdA
     updatedAt: now,
   };
 
-  if (!auth.currentUser) {
-    return newId;
-  }
-
   try {
     await setDoc(doc(db, CLASSES_COLLECTION, newId), fullClass);
     return newId;
@@ -67,9 +60,6 @@ export async function createClass(classData: Omit<VirtualClass, 'id' | 'createdA
 }
 
 export async function updateClassStatus(classId: string, status: ClassStatus): Promise<void> {
-  if (!auth.currentUser) {
-    return;
-  }
   try {
     const docRef = doc(db, CLASSES_COLLECTION, classId);
     await updateDoc(docRef, {
@@ -82,9 +72,6 @@ export async function updateClassStatus(classId: string, status: ClassStatus): P
 }
 
 export async function deleteClass(classId: string): Promise<void> {
-  if (!auth.currentUser) {
-    return;
-  }
   try {
     const docRef = doc(db, CLASSES_COLLECTION, classId);
     await deleteDoc(docRef);

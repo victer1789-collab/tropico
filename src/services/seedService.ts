@@ -376,18 +376,10 @@ export const SAMPLE_REPORTS: MonthlyAcademicReport[] = [
 
 export async function checkAndSeedInitialData(currentUserEmail?: string, currentUid?: string) {
   try {
-    if (!auth.currentUser) {
-      return;
-    }
-    if (localStorage.getItem('mitropico_seeded_v2') === 'true') {
-      return;
-    }
-
     const sentinelRef = doc(db, 'system', 'mitropico_v2');
     const sentinelSnap = await getDoc(sentinelRef);
 
     if (sentinelSnap.exists()) {
-      localStorage.setItem('mitropico_seeded_v2', 'true');
       return;
     }
 
@@ -428,7 +420,6 @@ export async function checkAndSeedInitialData(currentUserEmail?: string, current
 
     // Set sentinel
     await setDoc(sentinelRef, { initializedAt: new Date().toISOString(), version: 'mitropico_v2' });
-    localStorage.setItem('mitropico_seeded_v2', 'true');
   } catch (err) {
     console.warn('Seed operation note:', err);
   }

@@ -25,10 +25,6 @@ export const createAnnouncement = async (
     createdAt: new Date().toISOString(),
   };
 
-  if (!auth.currentUser) {
-    return id;
-  }
-
   try {
     await setDoc(docRef, payload);
     return id;
@@ -39,9 +35,6 @@ export const createAnnouncement = async (
 };
 
 export const deleteAnnouncement = async (id: string): Promise<void> => {
-  if (!auth.currentUser) {
-    return;
-  }
   const docRef = doc(db, ANNOUNCEMENTS_COLLECTION, id);
   try {
     await deleteDoc(docRef);
@@ -54,24 +47,26 @@ export const deleteAnnouncement = async (id: string): Promise<void> => {
 export const subscribeToAnnouncements = (
   callback: (announcements: Announcement[]) => void
 ) => {
-  if (!auth.currentUser) {
+  try {
+    const colRef = collection(db, ANNOUNCEMENTS_COLLECTION);
+    return onSnapshot(
+      colRef,
+      (snapshot) => {
+        const list: Announcement[] = [];
+        snapshot.forEach((docSnap) => {
+          list.push(docSnap.data() as Announcement);
+        });
+        // Sort newest first
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        callback(list);
+      },
+      (error) => {
+        console.warn('Announcements subscription notice:', error);
+        callback([]);
+      }
+    );
+  } catch (err) {
+    console.warn('Announcements subscribe error:', err);
     return () => {};
   }
-  const colRef = collection(db, ANNOUNCEMENTS_COLLECTION);
-  return onSnapshot(
-    colRef,
-    (snapshot) => {
-      const list: Announcement[] = [];
-      snapshot.forEach((docSnap) => {
-        list.push(docSnap.data() as Announcement);
-      });
-      // Sort newest first
-      list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      callback(list);
-    },
-    (error) => {
-      console.warn('Announcements subscription note:', error);
-      callback([]);
-    }
-  );
 };

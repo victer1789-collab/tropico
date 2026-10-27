@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { VirtualClass, AttendanceRecord, MonthlyAcademicReport, UserProfile, Announcement } from '../types';
 import { Megaphone } from 'lucide-react';
+import { db } from '../firebase';
 
 interface StudentDashboardProps {
   userProfile: UserProfile;

@@ -21,6 +21,7 @@ import {
   upsertReportGrade,
   exportReportsCSV,
 } from '../services/reportService';
+import { db } from '../firebase';
 
 interface ReportsDashboardProps {
   students: UserProfile[];

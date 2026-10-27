@@ -5,6 +5,7 @@ import { createGoogleMeetSpace } from '../services/meetService';
 import { createGoogleCalendarEvent } from '../services/calendarService';
 import { createClass } from '../services/classService';
 import { VirtualClass, GradeLevel } from '../types';
+import { db } from '../firebase';
 
 interface ScheduleClassModalProps {
   isOpen: boolean;
